@@ -16,6 +16,7 @@ function ajaxRequest({
   method = 'GET',
   delay = 5000,
   maxRetry = 2,
+  request=3;
 } = {}) {
   actions.initRequest(maxRetry, delay);
 
@@ -39,7 +40,24 @@ function ajaxRequest({
    * Send ajax request
    */
   function request() {
-
+let xhr =New XMLHttpRequest;
+xhr.open (method, url) ;
+xhr.onload = ev =>handleLoad (ev.target);
+xhr.onerror = (ev) =>{
+  if(ev.target.status===404) {
+    retryCount -=1;
+    if (retryCount===0) {
+      handleError ('Resource not avaiable: ${url}');
+    }else{
+      const to= setTimeout ( () =>{
+       clearTimeout (to);
+       request ()
+      } delay );
+    }
+  } else{
+    handleError (ev.message);
+  }
+}
   }
 
   return request;
